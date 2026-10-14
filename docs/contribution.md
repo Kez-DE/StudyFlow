@@ -6,4 +6,4 @@
 4. Tạo Pull Request vào `main`; mô tả chức năng, cách kiểm tra và ảnh giao diện nếu có.
 5. Leader review rồi merge. Trước khi làm tiếp, cập nhật branch từ `main`.
 
-Không push trực tiếp vào `main`. Nếu cần chỉnh file chung, nêu rõ trong PR để leader phối hợp. Mỗi PR nên nhỏ và chạy được khi mở trang tương ứng.
+Không push trực tiếp vào `main`. Leader phụ trách cấu trúc HTML chung, `css/global.css`, `js/common.js` và `js/storage.js`. Nếu cần chỉnh các phần này, nêu rõ trong PR để leader phối hợp. Mỗi PR nên nhỏ và chạy được khi mở trang tương ứng.
