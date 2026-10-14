@@ -17,5 +17,3 @@ Mở `index.html` trong trình duyệt. Các liên kết dùng đường dẫn t
 | 5 | `feature/analytics` | Thống kê bài tập, thời gian học, mục tiêu | `pages/analytics.html`, `css/analytics.css`, `js/analytics.js` |
 
 Đọc [yêu cầu](docs/requirements.md), [quy ước dữ liệu](docs/data-contract.md) và [cách cộng tác](docs/contribution.md) trước khi làm. File dùng chung `css/global.css` và `js/storage.js` do leader quản lý; khi cần thay đổi, trao đổi trong PR.
-
-# Hello
