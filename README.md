@@ -16,7 +16,7 @@ Mở `index.html` trong trình duyệt. Các liên kết dùng đường dẫn t
 | 4 | `feature/pomodoro` | Đồng hồ tập trung, phiên học, cài đặt giao diện | `pages/pomodoro.html`, `css/pomodoro.css`, `js/pomodoro.js` |
 | 5 | `feature/analytics` | Thống kê bài tập, thời gian học, mục tiêu | `pages/analytics.html`, `css/analytics.css`, `js/analytics.js` |
 
-Đọc [yêu cầu](docs/requirements.md), [quy ước dữ liệu](docs/data-contract.md) và [cách cộng tác](docs/contribution.md) trước khi làm. File dùng chung `css/global.css` và `js/storage.js` do leader quản lý; khi cần thay đổi, trao đổi trong PR.
+Đọc [yêu cầu](docs/requirements.md), [quy ước dữ liệu](docs/data-contract.md) và [cách cộng tác](docs/contribution.md) trước khi làm. Leader quản lý cấu trúc HTML chung, `css/global.css`, `js/common.js` và `js/storage.js`; khi cần thay đổi, trao đổi trong PR. `common.js` tự đánh dấu mục điều hướng của trang hiện tại.
 
 
 Hello
