@@ -1,4 +1,6 @@
 const TASKS_KEY = 'studyflow_tasks';
+const EVENTS_KEY = 'studyflow_events';
+const SESSIONS_KEY = 'studyflow_sessions';
 
 function localDateFromValue(value) {
   if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
@@ -13,6 +15,13 @@ function dayDistance(from, to) {
   const fromUtc = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate());
   const toUtc = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate());
   return Math.round((toUtc - fromUtc) / 86400000);
+}
+
+function localDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 function deadlineLabel(days) {
@@ -74,28 +83,82 @@ function renderDeadlines(tasks, today) {
   deadlines.forEach(({ task, date, days }) => list.append(createDeadlineItem(task, date, days)));
 }
 
+function renderTodayEvents(events, today) {
+  const list = document.querySelector('#today-event-list');
+  const todaysEvents = events
+    .filter((event) => event && event.date === localDateKey(today))
+    .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  document.querySelector('#today-event-count').textContent = todaysEvents.length;
+
+  if (todaysEvents.length === 0) {
+    const empty = document.createElement('li');
+    empty.className = 'deadline-empty';
+    const title = document.createElement('strong');
+    title.textContent = 'Hôm nay chưa có lịch học';
+    const note = document.createElement('span');
+    note.textContent = 'Thêm sự kiện trong Lịch học để xem tại đây.';
+    empty.append(title, note);
+    list.append(empty);
+    return;
+  }
+
+  todaysEvents.forEach((event) => {
+    const item = document.createElement('li');
+    item.className = 'today-event-item';
+    const time = document.createElement('time');
+    time.className = 'today-event-time';
+    time.textContent = event.time || 'Cả ngày';
+    if (event.time) time.dateTime = event.time;
+    const copy = document.createElement('div');
+    copy.className = 'deadline-copy';
+    const title = document.createElement('p');
+    title.className = 'deadline-title';
+    title.textContent = event.title || 'Buổi học';
+    const detail = document.createElement('p');
+    detail.className = 'deadline-subtitle';
+    detail.textContent = [event.subject, event.location].filter(Boolean).join(' · ') || 'Sự kiện học tập';
+    copy.append(title, detail);
+    item.append(time, copy);
+    list.append(item);
+  });
+}
+
 function renderDashboard() {
   const tasks = window.StudyFlowStorage.read(TASKS_KEY);
   const safeTasks = Array.isArray(tasks) ? tasks : [];
+  const storedEvents = window.StudyFlowStorage.read(EVENTS_KEY);
+  const events = Array.isArray(storedEvents) ? storedEvents : [];
+  const storedSessions = window.StudyFlowStorage.read(SESSIONS_KEY);
+  const sessions = Array.isArray(storedSessions) ? storedSessions : [];
   const completed = safeTasks.filter((task) => task && task.completed === true).length;
   const pending = safeTasks.length - completed;
   const rate = safeTasks.length ? Math.round((completed / safeTasks.length) * 100) : 0;
   const today = new Date();
+  const todayKey = localDateKey(today);
+  const focusMinutes = sessions.reduce((total, session) => {
+    if (!session || typeof session.completedAt !== 'string') return total;
+    const completedAt = new Date(session.completedAt);
+    return Number.isFinite(session.durationMinutes) && session.durationMinutes > 0
+      && !Number.isNaN(completedAt.getTime()) && localDateKey(completedAt) === todayKey
+      ? total + session.durationMinutes
+      : total;
+  }, 0);
 
   document.querySelector('#today-label').textContent = new Intl.DateTimeFormat('vi-VN', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   }).format(today);
   document.querySelector('#pending-count').textContent = pending;
   document.querySelector('#completed-count').textContent = completed;
-  document.querySelector('#completion-rate').textContent = `${rate}%`;
+  document.querySelector('#focus-minutes').textContent = focusMinutes;
   document.querySelector('#progress-note').textContent = safeTasks.length
-    ? `${completed} trên ${safeTasks.length} bài tập đã hoàn thành`
-    : 'Thêm bài tập đầu tiên để bắt đầu.';
+    ? `${rate}% tổng số bài tập`
+    : 'Thêm bài tập để theo dõi tiến độ.';
 
   const progress = document.querySelector('#completion-progress');
   progress.setAttribute('aria-valuenow', rate);
   progress.querySelector('span').style.width = `${rate}%`;
   renderDeadlines(safeTasks, today);
+  renderTodayEvents(events, today);
 }
 
 renderDashboard();
