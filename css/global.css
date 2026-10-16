@@ -1,12 +1,13 @@
 :root { font-family: system-ui, sans-serif; color: #172638; background: #f5f7fb; }
 * { box-sizing: border-box; }
 body { margin: 0; }
-.site-header { background: #fff; border-bottom: 1px solid #dbe2ec; padding: 1rem max(1rem, calc((100vw - 1100px) / 2)); }
+.site-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #fff; border-bottom: 1px solid #dbe2ec; padding: .8rem max(1rem, calc((100vw - 1100px) / 2)); }
 .brand { color: #1765b3; font-size: 1.4rem; font-weight: 700; text-decoration: none; }
-.site-nav { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .8rem; }
+.site-nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .4rem; margin-top: 0; }
 .site-nav a { color: #33465e; padding: .45rem .7rem; text-decoration: none; border-radius: .4rem; }
 .site-nav a:hover, .site-nav a[aria-current="page"] { background: #e4efff; color: #12569d; }
 main { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+@media (max-width: 700px) { .site-header { align-items: flex-start; flex-direction: column; } .site-nav { justify-content: flex-start; } }
 h1 { margin-bottom: .3rem; }
 .placeholder { background: #fff; border: 1px dashed #aab9cc; border-radius: .7rem; margin-top: 1.5rem; padding: 2rem; }
 .placeholder p { color: #52637a; }

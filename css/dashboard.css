@@ -4,103 +4,15 @@
   flex-direction: column;
 }
 
-.dashboard-page .site-header {
-  padding: 1rem clamp(1rem, 3vw, 3rem);
-}
-
 .dashboard-layout {
-  display: grid;
   flex: 1;
-  grid-template-columns: 235px minmax(0, 1fr);
-}
-
-.dashboard-sidebar {
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #e5eaf2;
-  background: #fff;
-  padding: 1.5rem 1rem;
-}
-
-.dashboard-sidebar-label {
-  margin: 0 0 .85rem .65rem;
-  color: #8793a5;
-  font-size: .7rem;
-  font-weight: 750;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.dashboard-sidebar-nav {
-  display: grid;
-  gap: .35rem;
-  margin: 0;
-}
-
-.dashboard-sidebar-nav a {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  border-radius: .7rem;
-  color: #53647b;
-  font-size: .88rem;
-  font-weight: 650;
-  padding: .7rem .75rem;
-}
-
-.dashboard-sidebar-nav a span {
-  width: 1.2rem;
-  color: #71809a;
-  font-size: 1.05rem;
-  text-align: center;
-}
-
-.dashboard-sidebar-nav a:hover,
-.dashboard-sidebar-nav a[aria-current="page"] {
-  background: #edf2ff;
-  color: #315bea;
-}
-
-.dashboard-sidebar-nav a[aria-current="page"] span {
-  color: #315bea;
-}
-
-.sidebar-focus-link {
-  display: flex;
-  gap: .65rem;
-  margin-top: auto;
-  border-radius: .85rem;
-  background: #f1f4ff;
-  padding: .9rem .75rem;
-  color: #315bea;
-  text-decoration: none;
-}
-
-.sidebar-focus-link > span:first-child {
-  font-size: 1.2rem;
-}
-
-.sidebar-focus-link strong,
-.sidebar-focus-link small {
-  display: block;
-}
-
-.sidebar-focus-link strong {
-  color: #263b78;
-  font-size: .76rem;
-}
-
-.sidebar-focus-link small {
-  margin-top: .25rem;
-  color: #6679b0;
-  font-size: .68rem;
 }
 
 .dashboard-layout > .dashboard {
   width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 2rem clamp(1rem, 3vw, 3rem) 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem 1rem;
 }
 
 .dashboard {
@@ -492,31 +404,6 @@
 }
 
 @media (max-width: 760px) {
-  .dashboard-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-sidebar {
-    border-right: 0;
-    border-bottom: 1px solid #e5eaf2;
-    padding: .8rem 1rem;
-  }
-
-  .dashboard-sidebar-label,
-  .sidebar-focus-link {
-    display: none;
-  }
-
-  .dashboard-sidebar-nav {
-    display: flex;
-    justify-content: center;
-    gap: .25rem;
-  }
-
-  .dashboard-sidebar-nav a {
-    padding: .55rem .7rem;
-  }
-
   .dashboard-layout > .dashboard {
     padding-top: 1.5rem;
   }
@@ -550,18 +437,6 @@
   .shortcut-grid {
     grid-template-columns: 1fr;
     gap: .5rem;
-  }
-
-  .dashboard-sidebar-nav {
-    justify-content: flex-start;
-    overflow-x: auto;
-  }
-
-  .dashboard-sidebar-nav a {
-    flex: 0 0 auto;
-    gap: .4rem;
-    font-size: .76rem;
-    padding: .5rem .55rem;
   }
 
   .dashboard-panel {
