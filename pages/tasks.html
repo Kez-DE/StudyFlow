@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bài tập | StudyFlow</title>
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/tasks.css">
+  <meta name="description" content="Tạo, sắp xếp và theo dõi bài tập, môn học, deadline và mức ưu tiên trong StudyFlow.">
+  <meta name="theme-color" content="#eaf6ff">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="StudyFlow">
+  <meta property="og:title" content="Quản lý bài tập | StudyFlow">
+  <meta property="og:description" content="Tạo, sắp xếp và theo dõi bài tập, môn học, deadline và mức ưu tiên.">
+  <title>Quản lý bài tập | StudyFlow</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/global.css?v=3">
+  <link rel="stylesheet" href="../css/tasks.css?v=3">
   <script src="../js/storage.js" defer></script>
   <script src="../js/common.js" defer></script>
   <script src="../js/tasks.js" defer></script>
@@ -21,13 +28,47 @@
       <a href="analytics.html">Thống kê</a>
     </nav>
   </header>
-  <main>
-    <h1>Bài tập</h1>
-    <p>Quản lý công việc và deadline.</p>
-    <section class="placeholder" aria-label="Nội dung Bài tập">
-      <h2>Chờ thành viên 2 triển khai</h2>
-      <p>Danh sách, biểu mẫu và bộ lọc bài tập tại đây.</p>
+  <main class="tasks-page">
+    <section class="module-heading" aria-labelledby="tasks-title">
+      <div><p class="module-eyebrow">LẬP KẾ HOẠCH RÕ RÀNG</p><h1 id="tasks-title">Bài tập của bạn</h1><p>Theo dõi việc cần làm và deadline sắp tới.</p></div>
+      <img class="studyflow-sketch" src="../images/whale-pencil.png" alt="" width="900" height="698" decoding="async">
+      <a class="module-link" href="calendar.html">Xem lịch học <span aria-hidden="true">↗</span></a>
     </section>
+
+    <section class="task-stats" aria-label="Tổng quan bài tập">
+      <article><span>Tổng bài tập</span><strong id="task-total">0</strong></article>
+      <article><span>Đang thực hiện</span><strong id="task-pending">0</strong></article>
+      <article><span>Đã hoàn thành</span><strong id="task-completed">0</strong></article>
+    </section>
+
+    <div class="tasks-layout">
+      <section class="task-panel task-list-panel" aria-labelledby="task-list-title">
+        <div class="panel-title-row"><div><p class="module-eyebrow">DANH SÁCH</p><h2 id="task-list-title">Công việc</h2></div><span id="visible-task-count" class="result-count">0 bài</span></div>
+        <div class="task-filters">
+          <label class="filter-search"><span class="sr-only">Tìm bài tập</span><input id="task-search" type="search" placeholder="Tìm theo tên hoặc môn học" autocomplete="off"></label>
+          <label><span class="sr-only">Lọc trạng thái</span><select id="status-filter"><option value="all">Mọi trạng thái</option><option value="pending">Chưa hoàn thành</option><option value="completed">Đã hoàn thành</option></select></label>
+          <label><span class="sr-only">Lọc mức ưu tiên</span><select id="priority-filter"><option value="all">Mọi ưu tiên</option><option value="high">Cao</option><option value="medium">Trung bình</option><option value="low">Thấp</option></select></label>
+          <label><span class="sr-only">Sắp xếp deadline</span><select id="sort-order"><option value="asc">Deadline gần nhất</option><option value="desc">Deadline xa nhất</option></select></label>
+        </div>
+        <p id="task-feedback" class="form-feedback" aria-live="polite"></p>
+        <ul class="task-list" id="task-list" aria-label="Danh sách bài tập"></ul>
+        <p class="empty-state" id="task-empty" hidden>Chưa có bài tập phù hợp. Thêm công việc mới hoặc đổi bộ lọc.</p>
+      </section>
+
+      <section class="task-panel task-form-panel" aria-labelledby="task-form-title">
+        <p class="module-eyebrow">BẮT ĐẦU TỪ MỘT VIỆC NHỎ</p>
+        <h2 id="task-form-title">Thêm bài tập</h2>
+        <form id="task-form">
+          <input id="task-id" type="hidden">
+          <label for="task-title"><span>Tên bài tập <span aria-hidden="true">*</span></span><input id="task-title" name="title" type="text" maxlength="120" required autocomplete="off" placeholder="Ví dụ: Ôn chương 3 môn Toán"></label>
+          <label for="task-subject"><span>Môn học</span><input id="task-subject" name="subject" type="text" maxlength="60" autocomplete="off" placeholder="Ví dụ: Toán"></label>
+          <label for="task-due-date"><span>Deadline</span><input id="task-due-date" name="dueDate" type="date" required></label>
+          <label for="task-priority"><span>Mức ưu tiên</span><select id="task-priority" name="priority"><option value="medium">Trung bình</option><option value="high">Cao</option><option value="low">Thấp</option></select></label>
+          <div class="form-actions"><button class="button-primary" id="task-submit" type="submit">Thêm bài tập</button><button class="button-quiet" id="task-cancel" type="button" hidden>Hủy sửa</button></div>
+        </form>
+      </section>
+    </div>
   </main>
+  <footer class="site-footer"><strong>StudyFlow</strong><span>Học tập có kế hoạch, tiến bộ mỗi ngày.</span></footer>
 </body>
 </html>
