@@ -1,10 +1,16 @@
 # StudyFlow
 
-Khung website quản lý học tập cho nhóm 5 người. Dùng HTML, CSS và JavaScript thuần; mỗi người phát triển một trang trên branch riêng. Các tính năng hiện là chỗ trống để nhóm triển khai.
+StudyFlow là website quản lý học tập tĩnh, dùng HTML, CSS và JavaScript thuần. Dự án gồm Dashboard, Tasks, Calendar, Pomodoro và Analytics; dữ liệu lưu trong `localStorage` của trình duyệt hiện tại.
 
 ## Chạy thử
 
-Mở `index.html` trong trình duyệt. Các liên kết dùng đường dẫn tương đối, phù hợp cả khi triển khai trên GitHub Pages.
+Chạy máy chủ tĩnh trong thư mục dự án rồi mở `http://localhost:4173`:
+
+```sh
+python3 -m http.server 4173
+```
+
+Các liên kết và ảnh dùng đường dẫn tương đối, phù hợp với GitHub Pages.
 
 ## Phân công
 

@@ -12,11 +12,11 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1rem 1rem;
+  padding: .4rem 1rem .3rem;
 }
 
 .dashboard {
-  padding-bottom: 3rem;
+  padding-bottom: .75rem;
 }
 
 .dashboard-heading,
@@ -29,7 +29,7 @@
 }
 
 .dashboard-heading {
-  margin-bottom: 1.75rem;
+  margin-bottom: .7rem;
 }
 
 .dashboard-eyebrow {
@@ -44,7 +44,7 @@
 .dashboard-heading h1 {
   margin: 0;
   color: #16243a;
-  font-size: clamp(1.8rem, 4vw, 2.45rem);
+  font-size: clamp(1.75rem, 3.6vw, 2.2rem);
   letter-spacing: -.045em;
 }
 
@@ -56,8 +56,8 @@
 .dashboard-primary-link {
   flex: 0 0 auto;
   border-radius: .7rem;
-  background: #315bea;
-  box-shadow: 0 6px 14px #315bea2b;
+  background: #438be8;
+  box-shadow: 0 6px 14px #438be82b;
   color: white;
   font-size: .9rem;
   font-weight: 700;
@@ -67,37 +67,41 @@
 }
 
 .dashboard-primary-link:hover {
-  background: #244bd1;
+  background: #286fc9;
   transform: translateY(-1px);
 }
 
 .dashboard-focus-link {
+  position: relative;
+  isolation: isolate;
   display: flex;
-  width: min(100%, 25rem);
+  width: min(100%, 34rem);
   align-items: center;
   gap: .85rem;
-  margin-bottom: 1rem;
-  border: 1px solid #e5eaff;
+  margin-bottom: .5rem;
+  border: 1px solid #d6eafb;
   border-radius: 1rem;
-  background: linear-gradient(110deg, #f0f3ff, #f8f9ff);
-  padding: 1rem 1.25rem;
-  color: #315bea;
+  background: linear-gradient(110deg, #eaf6ff, #f5fbff);
+  padding: .8rem 9rem .8rem 1.25rem;
+  color: #3978b9;
   text-decoration: none;
   transition: background .18s ease, transform .18s ease;
 }
 
+.dashboard-focus-link .studyflow-sketch { position: absolute; z-index: -1; top: 50%; right: .5rem; width: 118px; height: 78px; object-fit: contain; transform: translateY(-50%); }
+
 .dashboard-focus-link:hover {
   transform: translateY(-1px);
-  background: #e9edff;
+  background: #e2f2ff;
 }
 
 .dashboard-focus-link:focus-visible {
-  outline: 3px solid #8fa7ff;
+  outline: 3px solid #8cc7f5;
   outline-offset: 3px;
 }
 
 .dashboard-focus-icon {
-  color: #315bea;
+  color: #3978b9;
   font-size: 1.7rem;
   line-height: 1;
 }
@@ -108,13 +112,13 @@
 }
 
 .dashboard-focus-link strong {
-  color: #263b78;
+  color: #234c74;
   font-size: .95rem;
 }
 
 .dashboard-focus-link small {
   margin-top: .2rem;
-  color: #6679b0;
+  color: #55799b;
   font-size: .85rem;
 }
 
@@ -122,20 +126,20 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: .6rem;
 }
 
 .dashboard-stat,
 .dashboard-panel {
-  border: 1px solid #e5eaf2;
+  border: 1px solid #dbeaf6;
   border-radius: 1rem;
   background: #fff;
   box-shadow: 0 8px 24px #1b31500a;
 }
 
 .dashboard-stat {
-  min-height: 150px;
-  padding: 1.1rem 1.25rem;
+  min-height: 112px;
+  padding: .6rem .8rem;
 }
 
 .dashboard-stat-icon,
@@ -143,11 +147,11 @@
   display: inline-grid;
   flex: 0 0 auto;
   place-items: center;
-  width: 2.3rem;
-  height: 2.3rem;
+  width: 1.9rem;
+  height: 1.9rem;
   border-radius: .75rem;
-  background: #edf2ff;
-  color: #315bea;
+  background: #e8f5ff;
+  color: #3978b9;
   font-size: 1.2rem;
   font-weight: 800;
 }
@@ -159,7 +163,7 @@
 
 .dashboard-stat > p,
 .dashboard-progress-copy p {
-  margin: .7rem 0 .1rem;
+  margin: .4rem 0 .1rem;
   color: #64748b;
   font-size: .86rem;
   font-weight: 600;
@@ -203,7 +207,7 @@
 .dashboard-progress-track {
   overflow: hidden;
   height: .55rem;
-  margin: .85rem 0 .5rem;
+  margin: .25rem 0 .2rem;
   border-radius: 99px;
   background: #edf0f5;
 }
@@ -226,11 +230,11 @@
 
 .dashboard-panel {
   min-width: 0;
-  padding: 1.25rem;
+  padding: .75rem;
 }
 
 .dashboard-panel-heading {
-  margin-bottom: .8rem;
+  margin-bottom: .35rem;
 }
 
 .dashboard-panel-heading h2 {
@@ -263,14 +267,14 @@
   align-items: center;
   gap: .85rem;
   border-top: 1px solid #edf0f5;
-  padding: .9rem 0;
+  padding: .15rem 0;
 }
 
 .deadline-date {
   display: grid;
-  flex: 0 0 2.8rem;
+  flex: 0 0 2.5rem;
   place-items: center;
-  min-height: 2.8rem;
+  min-height: 1.8rem;
   border-radius: .75rem;
   background: #f1f4fa;
   color: #40516b;
@@ -316,7 +320,7 @@
   color: #3659bd;
   font-size: .7rem;
   font-weight: 750;
-  padding: .35rem .55rem;
+  padding: .25rem .4rem;
 }
 
 .deadline-badge--urgent {
@@ -349,7 +353,7 @@
   align-items: center;
   gap: .8rem;
   border-top: 1px solid #edf0f5;
-  padding: .9rem 0;
+  padding: .4rem 0;
 }
 
 .today-event-time {
@@ -359,12 +363,12 @@
   color: #3659bd;
   font-size: .78rem;
   font-weight: 750;
-  padding: .5rem .35rem;
+  padding: .35rem .3rem;
   text-align: center;
 }
 
 .dashboard-quick-actions {
-  margin-top: 1rem;
+  margin-top: .35rem;
 }
 
 .shortcut-grid {
@@ -386,7 +390,7 @@
 .shortcut-grid .shortcut-card {
   border: 1px solid #edf0f5;
   border-radius: .8rem;
-  padding: .85rem;
+  padding: .35rem .55rem;
 }
 
 .shortcut-card:hover strong {
@@ -415,8 +419,8 @@
 }
 
 .shortcut-icon--blue {
-  background: #edf2ff;
-  color: #315bea;
+  background: #e8f5ff;
+  color: #3978b9;
 }
 
 .shortcut-icon--orange {
@@ -489,6 +493,9 @@
   .dashboard-panel {
     padding: 1rem;
   }
+
+  .dashboard-focus-link { padding-right: 5.5rem; }
+  .dashboard-focus-link .studyflow-sketch { right: .2rem; width: 82px; height: 58px; opacity: .7; }
 
   .deadline-item {
     gap: .6rem;
