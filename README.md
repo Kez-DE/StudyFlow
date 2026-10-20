@@ -23,5 +23,3 @@ Các liên kết và ảnh dùng đường dẫn tương đối, phù hợp vớ
 | Vũ Trường Giang | `feature/analytics` | Thống kê bài tập, thời gian học, mục tiêu | `pages/analytics.html`, `css/analytics.css`, `js/analytics.js` |
 
 Đọc [yêu cầu](docs/requirements.md), [quy ước dữ liệu](docs/data-contract.md) và [cách cộng tác](docs/contribution.md) trước khi làm. Leader quản lý cấu trúc HTML chung, `css/global.css`, `js/common.js` và `js/storage.js`; khi cần thay đổi, trao đổi trong PR. `common.js` tự đánh dấu mục điều hướng của trang hiện tại.
-
-
