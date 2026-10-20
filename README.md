@@ -16,13 +16,12 @@ Các liên kết và ảnh dùng đường dẫn tương đối, phù hợp vớ
 
 | Người | Branch | Chức năng | File được sửa |
 | --- | --- | --- | --- |
-| 1 – Leader | `feature/dashboard` | Dashboard, điều hướng, review và tích hợp PR | `index.html`, `css/dashboard.css`, `js/dashboard.js` |
-| 2 | `feature/tasks` | Bài tập, deadline, tìm kiếm/lọc | `pages/tasks.html`, `css/tasks.css`, `js/tasks.js` |
-| 3 | `feature/calendar` | Lịch tháng, sự kiện, deadline từ Tasks | `pages/calendar.html`, `css/calendar.css`, `js/calendar.js` |
-| 4 | `feature/pomodoro` | Đồng hồ tập trung, phiên học, cài đặt giao diện | `pages/pomodoro.html`, `css/pomodoro.css`, `js/pomodoro.js` |
-| 5 | `feature/analytics` | Thống kê bài tập, thời gian học, mục tiêu | `pages/analytics.html`, `css/analytics.css`, `js/analytics.js` |
+| Nguyễn Đức Khang (Leader) | `feature/dashboard` | Dashboard, điều hướng, review và tích hợp PR | `index.html`, `css/dashboard.css`, `js/dashboard.js` |
+| Nguyễn Việt Hoàng | `feature/tasks` | Bài tập, deadline, tìm kiếm/lọc | `pages/tasks.html`, `css/tasks.css`, `js/tasks.js` |
+| Nguyễn Văn Hào | `feature/calendar` | Lịch tháng, sự kiện, deadline từ Tasks | `pages/calendar.html`, `css/calendar.css`, `js/calendar.js` |
+| Đào Bá Đạt | `feature/pomodoro` | Đồng hồ tập trung, phiên học, cài đặt giao diện | `pages/pomodoro.html`, `css/pomodoro.css`, `js/pomodoro.js` |
+| Vũ Trường Giang | `feature/analytics` | Thống kê bài tập, thời gian học, mục tiêu | `pages/analytics.html`, `css/analytics.css`, `js/analytics.js` |
 
 Đọc [yêu cầu](docs/requirements.md), [quy ước dữ liệu](docs/data-contract.md) và [cách cộng tác](docs/contribution.md) trước khi làm. Leader quản lý cấu trúc HTML chung, `css/global.css`, `js/common.js` và `js/storage.js`; khi cần thay đổi, trao đổi trong PR. `common.js` tự đánh dấu mục điều hướng của trang hiện tại.
 
 
-Hello
