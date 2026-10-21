@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lịch học | StudyFlow</title>
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/calendar.css">
+  <meta name="description" content="Xem lịch học theo tháng, quản lý buổi học và lịch thi, theo dõi deadline bài tập trong StudyFlow.">
+  <meta name="theme-color" content="#eaf6ff">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="StudyFlow">
+  <meta property="og:title" content="Lịch học và deadline | StudyFlow">
+  <meta property="og:description" content="Sắp xếp buổi học, lịch thi và deadline bài tập theo tháng.">
+  <title>Lịch học và deadline | StudyFlow</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/global.css?v=3">
+  <link rel="stylesheet" href="../css/calendar.css?v=3">
   <script src="../js/storage.js" defer></script>
   <script src="../js/common.js" defer></script>
   <script src="../js/calendar.js" defer></script>
@@ -21,13 +28,54 @@
       <a href="analytics.html">Thống kê</a>
     </nav>
   </header>
-  <main>
-    <h1>Lịch học</h1>
-    <p>Theo dõi buổi học, lịch thi và deadline.</p>
-    <section class="placeholder" aria-label="Nội dung Lịch học">
-      <h2>Chờ thành viên 3 triển khai</h2>
-      <p>Lịch tháng và danh sách sự kiện tại đây.</p>
+  <main class="calendar-page">
+    <section class="module-heading" aria-labelledby="calendar-title">
+      <div><p class="module-eyebrow">SẮP XẾP THỜI GIAN</p><h1 id="calendar-title">Lịch học</h1><p>Buổi học, lịch thi và deadline trong cùng một nơi.</p></div>
+      <img class="studyflow-sketch" src="../images/whale-pencil.png" alt="" width="900" height="698" decoding="async">
+      <a class="module-link" href="tasks.html">Quản lý bài tập <span aria-hidden="true">↗</span></a>
     </section>
+
+    <div class="calendar-layout">
+      <section class="calendar-panel" aria-labelledby="month-label">
+        <div class="month-toolbar">
+          <div><p class="module-eyebrow">LỊCH THÁNG</p><h2 id="month-label" aria-live="polite"></h2></div>
+          <div class="month-controls">
+            <button id="today-button" class="button-quiet" type="button">Hôm nay</button>
+            <button id="previous-month" class="icon-button" type="button" aria-label="Tháng trước">‹</button>
+            <button id="next-month" class="icon-button" type="button" aria-label="Tháng sau">›</button>
+          </div>
+        </div>
+        <div class="calendar-legend" aria-label="Chú giải"><span><i class="legend-event"></i>Buổi học</span><span><i class="legend-deadline"></i>Deadline</span></div>
+        <div class="calendar-weekdays" aria-hidden="true"><span>Thứ 2</span><span>Thứ 3</span><span>Thứ 4</span><span>Thứ 5</span><span>Thứ 6</span><span>Thứ 7</span><span>Chủ nhật</span></div>
+        <div class="calendar-grid" id="calendar-grid" role="group" aria-label="Ngày trong tháng"></div>
+      </section>
+
+      <aside class="calendar-side">
+        <section class="calendar-panel agenda-panel" aria-labelledby="agenda-title">
+          <p class="module-eyebrow">LỊCH TRONG NGÀY</p>
+          <h2 id="agenda-title">Chọn một ngày</h2>
+          <ul id="agenda-list" class="agenda-list" aria-live="polite"></ul>
+          <p id="agenda-empty" class="empty-state">Chưa có buổi học hoặc deadline.</p>
+        </section>
+        <section class="calendar-panel event-form-panel" aria-labelledby="event-form-title">
+          <p class="module-eyebrow">GHI LẠI KẾ HOẠCH</p>
+          <h2 id="event-form-title">Thêm buổi học</h2>
+          <form id="event-form">
+            <input id="event-id" type="hidden">
+            <label for="event-title"><span>Tên sự kiện <span aria-hidden="true">*</span></span><input id="event-title" name="title" type="text" maxlength="120" required autocomplete="off" placeholder="Ví dụ: Ôn thi giữa kỳ"></label>
+            <label for="event-subject"><span>Môn học</span><input id="event-subject" name="subject" type="text" maxlength="60" autocomplete="off" placeholder="Ví dụ: Vật lý"></label>
+            <div class="form-row">
+              <label for="event-date"><span>Ngày</span><input id="event-date" name="date" type="date" required></label>
+              <label for="event-time"><span>Giờ</span><input id="event-time" name="time" type="time"></label>
+            </div>
+            <label for="event-location"><span>Địa điểm</span><input id="event-location" name="location" type="text" maxlength="80" autocomplete="off" placeholder="Không bắt buộc"></label>
+            <p id="event-feedback" class="form-feedback" aria-live="polite"></p>
+            <div class="form-actions"><button class="button-primary" id="event-submit" type="submit">Thêm vào lịch</button><button class="button-quiet" id="event-cancel" type="button" hidden>Hủy sửa</button></div>
+          </form>
+        </section>
+      </aside>
+    </div>
   </main>
+  <footer class="site-footer"><strong>StudyFlow</strong><span>Học tập có kế hoạch, tiến bộ mỗi ngày.</span></footer>
 </body>
 </html>
