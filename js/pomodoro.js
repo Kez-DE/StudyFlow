@@ -1,372 +1,221 @@
-// Chức năng Pomodoro – thành viên 4
 (() => {
-  'use strict';
+  const storage = window.StudyFlowStorage;
+  const sessionsKey = 'studyflow_sessions';
+  const settingsKey = 'studyflow_pomodoro_settings';
+  const defaultDurations = { focus: 25, break: 5 };
+  const timeOutput = document.querySelector('#timer-time');
+  const caption = document.querySelector('#timer-caption');
+  const status = document.querySelector('#timer-status');
+  const ring = document.querySelector('#timer-ring');
+  const startButton = document.querySelector('#start-button');
+  const resetButton = document.querySelector('#reset-button');
+  const modeButtons = [...document.querySelectorAll('.mode-button[data-mode]')];
+  const subjectSelect = document.querySelector('#subject-select');
+  const taskSelect = document.querySelector('#task-select');
+  const darkToggle = document.querySelector('#dark-mode-toggle');
+  const soundToggle = document.querySelector('#sound-toggle');
+  const todayOutput = document.querySelector('#today-minutes');
+  const focusDurationOutput = document.querySelector('#focus-duration');
+  const breakDurationOutput = document.querySelector('#break-duration');
+  const focusDurationCopy = document.querySelector('#focus-duration-copy');
+  const breakDurationCopy = document.querySelector('#break-duration-copy');
+  const durationButtons = [...document.querySelectorAll('[data-duration]')];
 
-  const STORAGE_KEY = 'auraPomodoro.settings.v1';
-  const STATS_KEY = 'auraPomodoro.stats.v1';
-  const DAY_KEY = 'auraPomodoro.statsDay.v1';
-  const CIRCUMFERENCE = 2 * Math.PI * 139;
-  const MODES = {
-    focus: { label: 'Focus', caption: 'Sẵn sàng tập trung?', setting: 'focusDuration' },
-    short: { label: 'Nghỉ ngắn', caption: 'Thư giãn một chút nhé', setting: 'shortDuration' },
-    long: { label: 'Nghỉ dài', caption: 'Bạn đã làm rất tốt', setting: 'longDuration' }
-  };
-  const DEFAULT_SETTINGS = {
-    focusDuration: 25,
-    shortDuration: 5,
-    longDuration: 15,
-    cycleLength: 4,
-    soundEnabled: true,
-    notificationsEnabled: false
-  };
-
-  const $ = (id) => document.getElementById(id);
-  const els = {
-    display: $('timerDisplay'), caption: $('timerCaption'), progress: $('progressRing'),
-    start: $('startButton'), reset: $('resetButton'), playIcon: $('playIcon'), pauseIcon: $('pauseIcon'),
-    tabs: [...document.querySelectorAll('.mode-tab')], dots: $('sessionDots'), heading: $('sessionHeading'),
-    subtitle: $('sessionSubtitle'), focusMinutes: $('focusMinutes'), sessions: $('completedSessions'), cycles: $('completedCycles'),
-    modal: $('settingsModal'), form: $('settingsForm'), toast: $('toast')
-  };
-
-  let settings = loadSettings();
-  let stats = loadStats();
   let mode = 'focus';
-  let remainingSeconds = durationFor(mode);
-  let totalSeconds = remainingSeconds;
-  let intervalId = null;
+  let remaining = 0;
+  let deadline = 0;
+  let interval = null;
   let running = false;
-  let toastTimeout = null;
-  let audioContext = null;
-  let modalReturnFocus = null;
 
-  function todayKey() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  }
+  const readSettings = () => {
+    const settings = storage.read(settingsKey);
+    return settings && !Array.isArray(settings) ? settings : {};
+  };
+  const settings = readSettings();
+  const durations = {
+    focus: Number.isInteger(settings.focusMinutes) && settings.focusMinutes >= 5 && settings.focusMinutes <= 60 ? settings.focusMinutes : defaultDurations.focus,
+    break: Number.isInteger(settings.breakMinutes) && settings.breakMinutes >= 1 && settings.breakMinutes <= 30 ? settings.breakMinutes : defaultDurations.break,
+  };
+  const durationSeconds = () => durations[mode] * 60;
+  remaining = durationSeconds();
+  darkToggle.checked = settings.darkMode === true;
+  soundToggle.checked = settings.sound !== false;
+  ring.closest('.pomodoro-page').dataset.theme = darkToggle.checked ? 'dark' : 'light';
 
-  function loadSettings() {
-    try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      return stored ? { ...DEFAULT_SETTINGS, ...stored } : { ...DEFAULT_SETTINGS };
-    } catch { return { ...DEFAULT_SETTINGS }; }
-  }
+  const localDateKey = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-  function loadStats() {
-    try {
-      if (localStorage.getItem(DAY_KEY) !== todayKey()) {
-        localStorage.setItem(DAY_KEY, todayKey());
-        const empty = { focusSessions: 0, focusMinutes: 0, cycles: 0 };
-        localStorage.setItem(STATS_KEY, JSON.stringify(empty));
-        return empty;
-      }
-      const data = JSON.parse(localStorage.getItem(STATS_KEY));
-      return { focusSessions: 0, focusMinutes: 0, cycles: 0, ...(data || {}) };
-    } catch { return { focusSessions: 0, focusMinutes: 0, cycles: 0 }; }
-  }
-
-  function saveStats() {
-    try {
-      localStorage.setItem(DAY_KEY, todayKey());
-      localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-    } catch { /* Storage may be unavailable in private browsing. */ }
-  }
-
-  function saveSettings() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(settings)); } catch { /* Optional persistence. */ }
-  }
-
-  function durationFor(which) { return Number(settings[MODES[which].setting]) * 60; }
-
-  function formatTime(total) {
-    const safe = Math.max(0, Math.ceil(total));
-    const mins = Math.floor(safe / 60);
-    const secs = safe % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  }
-
-  function renderTimer() {
-    els.display.textContent = formatTime(remainingSeconds);
-    const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0;
-    els.progress.style.strokeDasharray = String(CIRCUMFERENCE);
-    els.progress.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - progress));
-    document.title = `${formatTime(remainingSeconds)} · StudyFlow Pomodoro`;
-    els.start.setAttribute('aria-label', running ? 'Tạm dừng đồng hồ' : 'Bắt đầu đồng hồ');
-    els.playIcon.classList.toggle('hidden', running);
-    els.pauseIcon.classList.toggle('hidden', !running);
-    els.caption.textContent = running ? (mode === 'focus' ? 'Đang tập trung… cố lên nhé' : 'Hãy tận hưởng giờ nghỉ') : MODES[mode].caption;
-  }
-
-  function renderStats() {
-    els.focusMinutes.textContent = stats.focusMinutes;
-    els.sessions.textContent = stats.focusSessions;
-    els.cycles.textContent = stats.cycles;
-    const position = stats.focusSessions % settings.cycleLength;
-    const finishedCurrentCycle = stats.focusSessions > 0 && position === 0;
-    const dots = els.dots.querySelectorAll('.session-dot');
-    const visibleCount = settings.cycleLength;
-    els.dots.innerHTML = '';
-    for (let i = 0; i < visibleCount; i += 1) {
-      const dot = document.createElement('span');
-      dot.className = 'session-dot';
-      if (i < position || (finishedCurrentCycle && i === visibleCount - 1)) dot.classList.add('complete');
-      else if (i === position && !finishedCurrentCycle) dot.classList.add('current');
-      els.dots.appendChild(dot);
-    }
-    els.dots.setAttribute('aria-label', `Đã hoàn thành ${position} trên ${visibleCount} phiên trong chu kỳ hiện tại`);
-    if (stats.focusSessions === 0) {
-      els.heading.textContent = 'Từng bước một';
-      els.subtitle.textContent = 'Hoàn thành một phiên tập trung để bắt đầu.';
-    } else if (finishedCurrentCycle) {
-      els.heading.textContent = 'Một chu kỳ trọn vẹn!';
-      els.subtitle.textContent = 'Bạn đã hoàn thành mục tiêu của chu kỳ này.';
-    } else {
-      els.heading.textContent = `Bạn đang làm rất tốt · ${position}/${visibleCount}`;
-      els.subtitle.textContent = `Còn ${visibleCount - position} phiên tập trung để đến giờ nghỉ dài.`;
-    }
-  }
-
-  function setMode(nextMode, showToast = false) {
-    if (!MODES[nextMode]) return;
-    stopTimer();
-    mode = nextMode;
-    remainingSeconds = durationFor(mode);
-    totalSeconds = remainingSeconds;
-    els.tabs.forEach((tab) => {
-      const active = tab.dataset.mode === mode;
-      tab.classList.toggle('active', active);
-      tab.setAttribute('aria-selected', String(active));
+  const loadSubjects = () => {
+    const storedTasks = storage.read('studyflow_tasks');
+    const tasks = Array.isArray(storedTasks) ? storedTasks.filter((task) => task && typeof task === 'object') : [];
+    const subjects = [...new Set(tasks.map((task) => task.subject).filter((subject) => typeof subject === 'string' && subject.trim()))];
+    subjects.forEach((subject) => {
+      const option = document.createElement('option');
+      option.value = subject;
+      option.textContent = subject;
+      subjectSelect.append(option);
     });
-    renderTimer();
-    if (showToast) showMessage(`${MODES[mode].label} · ${settings[MODES[mode].setting]} phút`);
-  }
+    tasks.filter((task) => task && task.completed !== true && typeof task.id === 'string' && typeof task.title === 'string').forEach((task) => {
+      const option = document.createElement('option');
+      option.value = task.id;
+      option.textContent = task.subject ? `${task.title} · ${task.subject}` : task.title;
+      taskSelect.append(option);
+    });
+  };
 
-  function startTimer() {
-    if (running) return;
-    if (remainingSeconds <= 0) remainingSeconds = totalSeconds = durationFor(mode);
-    running = true;
-    const deadline = Date.now() + remainingSeconds * 1000;
-    intervalId = window.setInterval(() => {
-      remainingSeconds = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
-      renderTimer();
-      if (remainingSeconds <= 0) completeTimer();
-    }, 200);
-    renderTimer();
-  }
+  const saveSettings = () => storage.write(settingsKey, {
+    darkMode: darkToggle.checked,
+    sound: soundToggle.checked,
+    focusMinutes: durations.focus,
+    breakMinutes: durations.break,
+  });
 
-  function stopTimer() {
-    if (intervalId !== null) window.clearInterval(intervalId);
-    intervalId = null;
+  const updateTodayTotal = () => {
+    const today = localDateKey(new Date());
+    const savedSessions = storage.read(sessionsKey);
+    const minutes = (Array.isArray(savedSessions) ? savedSessions : []).reduce((total, session) => {
+      if (!session || typeof session.completedAt !== 'string' || !Number.isFinite(session.durationMinutes)) return total;
+      const date = new Date(session.completedAt);
+      return !Number.isNaN(date.getTime()) && localDateKey(date) === today ? total + session.durationMinutes : total;
+    }, 0);
+    todayOutput.textContent = String(minutes);
+  };
+
+  const render = () => {
+    const minutes = Math.floor(remaining / 60).toString().padStart(2, '0');
+    const seconds = (remaining % 60).toString().padStart(2, '0');
+    const duration = durationSeconds();
+    timeOutput.textContent = `${minutes}:${seconds}`;
+    ring.style.setProperty('--progress', `${(remaining / duration) * 100}%`);
+    caption.textContent = mode === 'focus' ? 'PHIÊN TẬP TRUNG' : 'NGHỈ NGẮN';
+    startButton.textContent = running ? 'Tạm dừng' : remaining < duration ? 'Tiếp tục' : 'Bắt đầu';
+    focusDurationOutput.textContent = `${durations.focus} phút`;
+    breakDurationOutput.textContent = `${durations.break} phút`;
+    focusDurationCopy.textContent = String(durations.focus);
+    breakDurationCopy.textContent = String(durations.break);
+    ring.closest('.pomodoro-page').dataset.mode = mode;
+    durationButtons.forEach((button) => { button.disabled = running; });
+    modeButtons.forEach((button) => {
+      const active = button.dataset.mode === mode;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+  };
+
+  const playChime = () => {
+    if (!soundToggle.checked || !window.AudioContext) return;
+    const audio = new AudioContext();
+    const oscillator = audio.createOscillator();
+    const gain = audio.createGain();
+    oscillator.frequency.value = 660;
+    gain.gain.setValueAtTime(0.12, audio.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.65);
+    oscillator.connect(gain);
+    gain.connect(audio.destination);
+    oscillator.start();
+    oscillator.stop(audio.currentTime + 0.65);
+    oscillator.onended = () => audio.close();
+  };
+
+  const completeTimer = () => {
+    clearInterval(interval);
+    interval = null;
     running = false;
-  }
-
-  function toggleTimer() {
-    if (running) {
-      // Preserve seconds already elapsed when pausing.
-      stopTimer();
-      renderTimer();
-      showMessage('Đã tạm dừng đồng hồ.');
-    } else startTimer();
-  }
-
-  function resetTimer() {
-    stopTimer();
-    remainingSeconds = totalSeconds = durationFor(mode);
-    renderTimer();
-    showMessage('Đồng hồ đã được đặt lại.');
-  }
-
-  function completeTimer() {
-    stopTimer();
-    remainingSeconds = 0;
-    renderTimer();
-    playChime();
-    sendNotification();
-
+    remaining = 0;
     if (mode === 'focus') {
-      stats.focusSessions += 1;
-      stats.focusMinutes += Number(settings.focusDuration);
-      const shouldTakeLongBreak = stats.focusSessions % settings.cycleLength === 0;
-      if (shouldTakeLongBreak) stats.cycles += 1;
-      saveStats();
-      renderStats();
-      const nextMode = shouldTakeLongBreak ? 'long' : 'short';
-      showMessage(shouldTakeLongBreak ? 'Hoàn thành chu kỳ! Đến lúc nghỉ dài.' : 'Hoàn thành phiên tập trung! Đến lúc nghỉ ngắn.');
-      setMode(nextMode);
-      els.caption.textContent = shouldTakeLongBreak ? 'Tuyệt vời! Hãy nghỉ ngơi nhé' : 'Tốt lắm! Hãy nghỉ một chút nhé';
+      const storedSessions = storage.read(sessionsKey);
+      const sessions = Array.isArray(storedSessions) ? storedSessions : [];
+      const storedTasks = storage.read('studyflow_tasks');
+      const selectedTask = (Array.isArray(storedTasks) ? storedTasks : []).find((task) => task && task.id === taskSelect.value);
+      sessions.push({
+        id: `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        subject: selectedTask?.subject || subjectSelect.value,
+        completedAt: new Date().toISOString(),
+        durationMinutes: durations.focus,
+      });
+      storage.write(sessionsKey, sessions);
+      updateTodayTotal();
+      status.textContent = `Hoàn thành phiên học! Đến lúc nghỉ ${durations.break} phút.`;
+      mode = 'break';
+      remaining = durationSeconds();
     } else {
-      showMessage('Hết giờ nghỉ. Sẵn sàng tập trung trở lại?');
-      setMode('focus');
-      els.caption.textContent = 'Nạp lại năng lượng và bắt đầu nhé';
+      status.textContent = 'Hết giờ nghỉ. Sẵn sàng cho phiên tập trung tiếp theo.';
+      mode = 'focus';
+      remaining = durationSeconds();
     }
-    renderTimer();
-  }
+    playChime();
+    render();
+  };
 
-  function playChime() {
-    if (!settings.soundEnabled) return;
-    try {
-      audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioContext.state === 'suspended') audioContext.resume();
-      const now = audioContext.currentTime;
-      [659.25, 783.99, 987.77].forEach((frequency, i) => {
-        const osc = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = frequency;
-        gain.gain.setValueAtTime(0.0001, now + i * 0.16);
-        gain.gain.exponentialRampToValueAtTime(0.12, now + i * 0.16 + 0.025);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.16 + 0.32);
-        osc.connect(gain);
-        gain.connect(audioContext.destination);
-        osc.start(now + i * 0.16);
-        osc.stop(now + i * 0.16 + 0.34);
-      });
-    } catch { /* Audio is optional and may be disabled by the browser. */ }
-  }
+  const tick = () => {
+    remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    if (remaining === 0) completeTimer();
+    else render();
+  };
 
-  async function sendNotification() {
-    if (!settings.notificationsEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
-    const title = mode === 'focus' ? 'Đã hoàn thành phiên tập trung!' : 'Đã hết giờ nghỉ!';
-    try { new Notification(title, { body: mode === 'focus' ? 'Bạn đã làm rất tốt. Đến lúc nghỉ ngơi.' : 'Sẵn sàng bắt đầu phiên tập trung tiếp theo?', tag: 'aura-pomodoro' }); } catch { /* Browser may block notifications. */ }
-  }
-
-  function showMessage(message) {
-    els.toast.textContent = message;
-    els.toast.classList.add('visible');
-    window.clearTimeout(toastTimeout);
-    toastTimeout = window.setTimeout(() => els.toast.classList.remove('visible'), 2600);
-  }
-
-  function openSettings() {
-    modalReturnFocus = document.activeElement;
-    $('focusDuration').value = settings.focusDuration;
-    $('shortDuration').value = settings.shortDuration;
-    $('longDuration').value = settings.longDuration;
-    $('cycleLength').value = settings.cycleLength;
-    $('soundEnabled').checked = settings.soundEnabled;
-    $('notificationsEnabled').checked = settings.notificationsEnabled;
-    els.modal.classList.remove('hidden');
-    $('focusDuration').focus();
-  }
-
-  function closeSettings() {
-    els.modal.classList.add('hidden');
-    if (modalReturnFocus && typeof modalReturnFocus.focus === 'function') modalReturnFocus.focus();
-  }
-
-  els.start.addEventListener('click', toggleTimer);
-  els.reset.addEventListener('click', resetTimer);
-  els.tabs.forEach((tab) => tab.addEventListener('click', () => setMode(tab.dataset.mode)));
-
-  // The StudyFlow navigation scrolls to the sections available in this prototype.
-  const navLinks = [...document.querySelectorAll('.nav-link')];
-  navLinks.forEach((link) => {
-    link.addEventListener('click', (event) => {
-      if (link.hasAttribute('data-coming-soon')) {
-        event.preventDefault();
-        showMessage('Mục này sẽ được bổ sung sau.');
+  const start = () => {
+    if (running) {
+      remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      if (remaining === 0) {
+        completeTimer();
         return;
       }
-
-      const target = link.dataset.navTarget;
-      if (!target) return;
-      navLinks.forEach((item) => {
-        item.classList.toggle('active', item === link);
-        item.removeAttribute('aria-current');
-      });
-      link.setAttribute('aria-current', 'page');
-
-      if (target === 'dashboard') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        const destinationId = target === 'focus' ? 'pomodoro' : 'stats';
-        $(destinationId).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
-
-  $('openSettings').addEventListener('click', openSettings);
-  $('closeSettings').addEventListener('click', closeSettings);
-  $('cancelSettings').addEventListener('click', closeSettings);
-  els.modal.addEventListener('click', (event) => { if (event.target === els.modal) closeSettings(); });
-
-  els.form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const fields = [
-      ['focusDuration', 1, 180, 'Thời gian tập trung'],
-      ['shortDuration', 1, 60, 'Thời gian nghỉ ngắn'],
-      ['longDuration', 1, 90, 'Thời gian nghỉ dài'],
-      ['cycleLength', 2, 8, 'Số phiên trong chu kỳ']
-    ];
-    for (const [id, min, max, label] of fields) {
-      const field = $(id);
-      const value = Number(field.value);
-      if (!Number.isInteger(value) || value < min || value > max) {
-        field.setCustomValidity(`${label}: vui lòng nhập số nguyên từ ${min} đến ${max}.`);
-        field.reportValidity();
-        field.addEventListener('input', () => field.setCustomValidity(''), { once: true });
-        return;
-      }
-      field.setCustomValidity('');
+      clearInterval(interval);
+      interval = null;
+      running = false;
+      status.textContent = 'Đồng hồ đang tạm dừng.';
+      render();
+      return;
     }
-    const notificationWasEnabled = settings.notificationsEnabled;
-    settings = {
-      focusDuration: Number($('focusDuration').value),
-      shortDuration: Number($('shortDuration').value),
-      longDuration: Number($('longDuration').value),
-      cycleLength: Number($('cycleLength').value),
-      soundEnabled: $('soundEnabled').checked,
-      notificationsEnabled: $('notificationsEnabled').checked
-    };
-    if (settings.notificationsEnabled && !notificationWasEnabled && 'Notification' in window) {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        settings.notificationsEnabled = false;
-        $('notificationsEnabled').checked = false;
-        showMessage('Trình duyệt chưa cấp quyền thông báo.');
-      }
-    } else if (settings.notificationsEnabled && !('Notification' in window)) {
-      settings.notificationsEnabled = false;
-      $('notificationsEnabled').checked = false;
-      showMessage('Trình duyệt này không hỗ trợ thông báo.');
-    }
+    if (remaining <= 0) remaining = durationSeconds();
+    running = true;
+    deadline = Date.now() + remaining * 1000;
+    status.textContent = mode === 'focus' ? 'Đang tập trung. Cố lên!' : 'Đang nghỉ ngắn.';
+    interval = window.setInterval(tick, 1000);
+    render();
+  };
+
+  const reset = () => {
+    clearInterval(interval);
+    interval = null;
+    running = false;
+    remaining = durationSeconds();
+    status.textContent = 'Đồng hồ đã được đặt lại.';
+    render();
+  };
+
+  modeButtons.forEach((button) => button.addEventListener('click', () => {
+    clearInterval(interval);
+    interval = null;
+    running = false;
+    mode = button.dataset.mode;
+    remaining = durationSeconds();
+    status.textContent = mode === 'focus' ? 'Sẵn sàng cho phiên tập trung.' : 'Sẵn sàng nghỉ ngắn.';
+    render();
+  }));
+  startButton.addEventListener('click', start);
+  resetButton.addEventListener('click', reset);
+  durationButtons.forEach((button) => button.addEventListener('click', () => {
+    const type = button.dataset.duration;
+    const next = durations[type] + Number(button.dataset.step);
+    const limit = type === 'focus' ? { min: 5, max: 60 } : { min: 1, max: 30 };
+    if (next < limit.min || next > limit.max) return;
+    durations[type] = next;
+    if (mode === type) remaining = durationSeconds();
     saveSettings();
-    // Keep the timer paused after changing settings to avoid unexpectedly restarting a session.
-    stopTimer();
-    remainingSeconds = totalSeconds = durationFor(mode);
-    renderTimer();
-    renderStats();
-    closeSettings();
-    showMessage('Đã lưu cài đặt.');
+    render();
+  }));
+  darkToggle.addEventListener('change', () => {
+    ring.closest('.pomodoro-page').dataset.theme = darkToggle.checked ? 'dark' : 'light';
+    saveSettings();
   });
+  soundToggle.addEventListener('change', saveSettings);
 
-  $('clearStatsButton').addEventListener('click', () => {
-    if (!window.confirm('Bạn có chắc muốn xóa toàn bộ thống kê hôm nay?')) return;
-    stats = { focusSessions: 0, focusMinutes: 0, cycles: 0 };
-    saveStats();
-    renderStats();
-    showMessage('Đã xóa thống kê hôm nay.');
-  });
-
-  document.addEventListener('keydown', (event) => {
-    const tag = document.activeElement?.tagName;
-    const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(tag) || document.activeElement?.isContentEditable;
-    if (event.code === 'Space' && !isTyping && els.modal.classList.contains('hidden')) {
-      event.preventDefault();
-      toggleTimer();
-    }
-    if (event.key === 'Escape' && !els.modal.classList.contains('hidden')) closeSettings();
-  });
-
-  // If the browser is left open across midnight, start a fresh daily tally.
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && localStorage.getItem(DAY_KEY) !== todayKey()) {
-      stats = { focusSessions: 0, focusMinutes: 0, cycles: 0 };
-      saveStats();
-      renderStats();
-    }
-  });
-
-  renderTimer();
-  renderStats();
+  loadSubjects();
+  updateTodayTotal();
+  render();
 })();
