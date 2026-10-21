@@ -25,3 +25,11 @@ Các module dùng `window.StudyFlowStorage.read(key)` và `.write(key, value)` t
 ```
 
 Chỉ ghi phiên focus hoàn thành; `completedAt` là ISO 8601. Dashboard và Analytics đọc các khóa này, không tự tạo dữ liệu khác định dạng. Nếu cần đổi schema, cập nhật tài liệu trong PR và thông báo cả nhóm.
+
+## `studyflow_goals` – mảng mục tiêu học tập (Analytics)
+
+```json
+[{"id":"goal-1","type":"weekly-minutes","target":300,"subject":"Java","createdAt":"2026-10-20T10:00:00.000Z"}]
+```
+
+Chỉ Analytics ghi khóa này. `type` là `weekly-minutes` (phút học trong tuần, tính từ thứ Hai), `daily-minutes` (phút học hôm nay) hoặc `completed-tasks` (số bài tập đã hoàn thành); `target` là số nguyên dương; `subject` là chuỗi rỗng khi áp dụng cho mọi môn. Tiến độ được tính từ `studyflow_sessions` và `studyflow_tasks`, không lưu lại.

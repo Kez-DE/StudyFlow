@@ -3,30 +3,124 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard | StudyFlow</title>
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/dashboard.css">
+  <meta name="description" content="StudyFlow giúp bạn quản lý bài tập, lịch học, Pomodoro và theo dõi tiến độ học tập trong một nơi.">
+  <meta name="theme-color" content="#eaf6ff">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="StudyFlow">
+  <meta property="og:title" content="StudyFlow | Dashboard học tập">
+  <meta property="og:description" content="Quản lý bài tập, lịch học, Pomodoro và theo dõi tiến độ học tập.">
+  <title>StudyFlow | Dashboard học tập</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/global.css?v=3">
+  <link rel="stylesheet" href="css/dashboard.css?v=3">
   <script src="js/storage.js" defer></script>
+  <script src="js/common.js" defer></script>
   <script src="js/dashboard.js" defer></script>
 </head>
-<body>
+<body class="dashboard-page">
   <header class="site-header">
     <a class="brand" href="index.html">StudyFlow</a>
     <nav class="site-nav" aria-label="Điều hướng chính">
-      <a href="index.html" aria-current="page">Dashboard</a>
+      <a href="index.html">Dashboard</a>
       <a href="pages/tasks.html">Bài tập</a>
       <a href="pages/calendar.html">Lịch học</a>
       <a href="pages/pomodoro.html">Tập trung</a>
       <a href="pages/analytics.html">Thống kê</a>
     </nav>
   </header>
-  <main>
-    <h1>Dashboard</h1>
-    <p>Tổng quan việc học hôm nay.</p>
-    <section class="placeholder" aria-label="Nội dung Dashboard">
-      <h2>Chờ thành viên 1 triển khai</h2>
-      <p>Hiển thị bài tập và deadline gần nhất tại đây.</p>
-    </section>
-  </main>
+  <div class="dashboard-layout">
+    <main class="dashboard">
+      <section class="dashboard-heading" aria-labelledby="dashboard-title">
+        <div>
+          <p class="dashboard-eyebrow" id="today-label"></p>
+          <h1 id="dashboard-title">Tổng quan học tập</h1>
+          <p class="dashboard-subtitle">Theo dõi tiến độ và chuẩn bị cho những hạn nộp sắp tới.</p>
+        </div>
+        <a class="dashboard-primary-link" href="pages/tasks.html">+ Thêm bài tập</a>
+      </section>
+
+      <a class="dashboard-focus-link" href="pages/pomodoro.html">
+        <span class="dashboard-focus-icon" aria-hidden="true">✦</span>
+        <span><strong>Sẵn sàng tập trung?</strong><small>Bắt đầu một phiên học</small></span>
+        <img class="studyflow-sketch" src="images/whale-pencil.png" alt="" width="900" height="698" decoding="async">
+      </a>
+
+      <section class="dashboard-stats" aria-label="Tổng quan học tập">
+        <article class="dashboard-stat">
+          <span class="dashboard-stat-icon" aria-hidden="true">◷</span>
+          <p>Chưa hoàn thành</p>
+          <strong id="pending-count">0</strong>
+          <span class="dashboard-stat-note">bài tập đang chờ</span>
+        </article>
+        <article class="dashboard-stat">
+          <span class="dashboard-stat-icon dashboard-stat-icon--green" aria-hidden="true">✓</span>
+          <p>Đã hoàn thành</p>
+          <strong id="completed-count">0</strong>
+          <div class="dashboard-progress-track" role="progressbar" aria-label="Tiến độ hoàn thành bài tập" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="completion-progress">
+            <span></span>
+          </div>
+          <span class="dashboard-stat-note" id="progress-note">0% tổng số bài tập</span>
+        </article>
+        <article class="dashboard-stat">
+          <span class="dashboard-stat-icon dashboard-stat-icon--purple" aria-hidden="true">◉</span>
+          <p>Thời gian tập trung</p>
+          <strong><span id="focus-minutes">0</span><small class="dashboard-stat-unit"> phút</small></strong>
+          <span class="dashboard-stat-note">đã học hôm nay</span>
+        </article>
+        <article class="dashboard-stat">
+          <span class="dashboard-stat-icon dashboard-stat-icon--orange" aria-hidden="true">▦</span>
+          <p>Lịch học hôm nay</p>
+          <strong id="today-event-count">0</strong>
+          <span class="dashboard-stat-note">sự kiện trong lịch</span>
+        </article>
+      </section>
+
+      <div class="dashboard-content-grid">
+        <section class="dashboard-panel" aria-labelledby="deadlines-title">
+          <div class="dashboard-panel-heading">
+            <div>
+              <p class="dashboard-eyebrow">Đừng bỏ lỡ</p>
+              <h2 id="deadlines-title">Deadline gần nhất</h2>
+            </div>
+            <a class="dashboard-text-link" href="pages/tasks.html">Tất cả bài tập <span aria-hidden="true">→</span></a>
+          </div>
+          <ul class="deadline-list" id="deadline-list" aria-live="polite"></ul>
+        </section>
+
+        <section class="dashboard-panel" aria-labelledby="today-events-title">
+          <div class="dashboard-panel-heading">
+            <div>
+              <p class="dashboard-eyebrow">Hôm nay</p>
+              <h2 id="today-events-title">Lịch học</h2>
+            </div>
+            <a class="dashboard-text-link" href="pages/calendar.html">Mở lịch <span aria-hidden="true">→</span></a>
+          </div>
+          <ul class="today-event-list" id="today-event-list" aria-live="polite"></ul>
+        </section>
+      </div>
+
+      <section class="dashboard-panel dashboard-quick-actions" aria-labelledby="shortcuts-title">
+        <div class="dashboard-panel-heading">
+          <div>
+            <p class="dashboard-eyebrow">Bắt đầu nhanh</p>
+            <h2 id="shortcuts-title">Lối tắt</h2>
+          </div>
+        </div>
+        <div class="shortcut-grid">
+          <a class="shortcut-card" href="pages/tasks.html">
+            <span class="shortcut-icon shortcut-icon--blue" aria-hidden="true">▤</span>
+            <span><strong>Quản lý bài tập</strong><small>Thêm và theo dõi deadline</small></span>
+            <span class="shortcut-arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="shortcut-card" href="pages/calendar.html">
+            <span class="shortcut-icon shortcut-icon--orange" aria-hidden="true">▦</span>
+            <span><strong>Lịch học</strong><small>Xem sự kiện sắp tới</small></span>
+            <span class="shortcut-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+      <footer class="site-footer"><strong>StudyFlow</strong><span>Học tập có kế hoạch, tiến bộ mỗi ngày.</span></footer>
+    </main>
+  </div>
 </body>
 </html>

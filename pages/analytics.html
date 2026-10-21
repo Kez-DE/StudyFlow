@@ -3,10 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Thống kê | StudyFlow</title>
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/analytics.css">
+  <meta name="description" content="Thống kê bài tập đã hoàn thành, tổng thời gian học, biểu đồ 7 ngày, tiến độ theo môn và mục tiêu học tập trong StudyFlow.">
+  <meta name="theme-color" content="#eaf6ff">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="StudyFlow">
+  <meta property="og:title" content="Thống kê học tập | StudyFlow">
+  <meta property="og:description" content="Theo dõi bài tập hoàn thành, thời gian học 7 ngày, tiến độ theo môn và mục tiêu học tập.">
+  <title>Thống kê học tập | StudyFlow</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/global.css?v=3">
+  <link rel="stylesheet" href="../css/analytics.css?v=1">
   <script src="../js/storage.js" defer></script>
+  <script src="../js/common.js" defer></script>
   <script src="../js/analytics.js" defer></script>
 </head>
 <body>
@@ -17,16 +25,118 @@
       <a href="tasks.html">Bài tập</a>
       <a href="calendar.html">Lịch học</a>
       <a href="pomodoro.html">Tập trung</a>
-      <a href="analytics.html" aria-current="page">Thống kê</a>
+      <a href="analytics.html">Thống kê</a>
     </nav>
   </header>
-  <main>
-    <h1>Thống kê</h1>
-    <p>Xem tiến độ học tập.</p>
-    <section class="placeholder" aria-label="Nội dung Thống kê">
-      <h2>Chờ thành viên 5 triển khai</h2>
-      <p>Biểu đồ và mục tiêu học tập tại đây.</p>
+  <main class="analytics-page">
+    <section class="module-heading" aria-labelledby="analytics-title">
+      <div><p class="module-eyebrow">NHÌN LẠI ĐỂ TIẾN XA HƠN</p><h1 id="analytics-title">Thống kê học tập</h1><p id="analytics-subtitle">Theo dõi bài tập, thời gian học và mục tiêu của bạn.</p></div>
+      <img class="studyflow-sketch" src="../images/whale-pencil.png" alt="" width="900" height="698" decoding="async">
+      <a class="module-link" href="pomodoro.html">Bắt đầu phiên học <span aria-hidden="true">↗</span></a>
     </section>
+
+    <section class="analytics-stats" aria-label="Chỉ số chính">
+      <article class="analytics-stat">
+        <span class="analytics-stat-icon" aria-hidden="true">✓</span>
+        <p>Bài tập hoàn thành</p>
+        <strong><span id="stat-completed">0</span><small id="stat-total"> / 0</small></strong>
+        <span class="analytics-stat-note" id="stat-completed-note">Chưa có bài tập</span>
+      </article>
+      <article class="analytics-stat">
+        <span class="analytics-stat-icon analytics-stat-icon--violet" aria-hidden="true">◷</span>
+        <p>Tổng thời gian học</p>
+        <strong id="stat-total-minutes">0 phút</strong>
+        <span class="analytics-stat-note" id="stat-session-note">0 phiên tập trung</span>
+      </article>
+      <article class="analytics-stat">
+        <span class="analytics-stat-icon analytics-stat-icon--teal" aria-hidden="true">▥</span>
+        <p>7 ngày qua</p>
+        <strong id="stat-week-minutes">0 phút</strong>
+        <span class="analytics-stat-note" id="stat-week-note">Trung bình 0 phút/ngày</span>
+      </article>
+      <article class="analytics-stat">
+        <span class="analytics-stat-icon analytics-stat-icon--amber" aria-hidden="true">✦</span>
+        <p>Ngày học trong tuần</p>
+        <strong><span id="stat-active-days">0</span><small> / 7</small></strong>
+        <span class="analytics-stat-note" id="stat-active-note">Hãy bắt đầu phiên đầu tiên</span>
+      </article>
+    </section>
+
+    <div class="analytics-grid analytics-grid--top">
+      <section class="analytics-panel" aria-labelledby="chart-title">
+        <div class="analytics-panel-heading">
+          <div><p class="module-eyebrow">BIỂU ĐỒ</p><h2 id="chart-title">Thời gian học 7 ngày</h2></div>
+          <div class="segmented" role="group" aria-label="Chọn chỉ số biểu đồ">
+            <button type="button" class="segmented-button" id="chart-metric-minutes" data-metric="minutes" aria-pressed="true">Phút học</button>
+            <button type="button" class="segmented-button" id="chart-metric-sessions" data-metric="sessions" aria-pressed="false">Số phiên</button>
+          </div>
+        </div>
+        <ol class="week-chart" id="week-chart" aria-describedby="chart-summary"></ol>
+        <ol class="week-chart-labels" id="week-chart-labels" aria-hidden="true"></ol>
+        <p class="chart-summary" id="chart-summary" aria-live="polite"></p>
+      </section>
+
+      <section class="analytics-panel completion-panel" aria-labelledby="completion-title">
+        <div class="analytics-panel-heading">
+          <div><p class="module-eyebrow">BÀI TẬP</p><h2 id="completion-title">Tỷ lệ hoàn thành</h2></div>
+          <a class="analytics-text-link" href="tasks.html">Mở bài tập <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="completion-body">
+          <div class="completion-ring" id="completion-ring" role="img" aria-label="Chưa có bài tập">
+            <div class="completion-ring-center"><strong id="completion-rate">0%</strong><span>hoàn thành</span></div>
+          </div>
+          <ul class="completion-legend">
+            <li><span class="legend-dot legend-dot--done" aria-hidden="true"></span>Đã xong<strong id="legend-completed">0</strong></li>
+            <li><span class="legend-dot legend-dot--pending" aria-hidden="true"></span>Đang làm<strong id="legend-pending">0</strong></li>
+            <li><span class="legend-dot legend-dot--overdue" aria-hidden="true"></span>Quá hạn<strong id="legend-overdue">0</strong></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="analytics-grid">
+      <section class="analytics-panel" aria-labelledby="subjects-title">
+        <div class="analytics-panel-heading">
+          <div><p class="module-eyebrow">THEO MÔN HỌC</p><h2 id="subjects-title">Tiến độ theo môn</h2></div>
+          <label class="subject-sort"><span class="sr-only">Sắp xếp môn học</span>
+            <select id="subject-sort">
+              <option value="minutes">Nhiều phút học nhất</option>
+              <option value="tasks">Nhiều bài tập nhất</option>
+              <option value="progress">Tiến độ thấp nhất</option>
+              <option value="name">Tên môn A–Z</option>
+            </select>
+          </label>
+        </div>
+        <ul class="subject-list" id="subject-list" aria-live="polite"></ul>
+      </section>
+
+      <section class="analytics-panel" aria-labelledby="goals-title">
+        <div class="analytics-panel-heading">
+          <div><p class="module-eyebrow">MỤC TIÊU</p><h2 id="goals-title">Mục tiêu học tập</h2></div>
+          <span class="goal-count" id="goal-count">0 mục tiêu</span>
+        </div>
+        <form id="goal-form" class="goal-form" novalidate>
+          <label for="goal-type"><span>Loại mục tiêu</span>
+            <select id="goal-type" name="type">
+              <option value="weekly-minutes">Phút học trong tuần</option>
+              <option value="daily-minutes">Phút học hôm nay</option>
+              <option value="completed-tasks">Số bài tập hoàn thành</option>
+            </select>
+          </label>
+          <label for="goal-target"><span id="goal-target-label">Chỉ tiêu (phút)</span>
+            <input id="goal-target" name="target" type="number" min="1" max="10000" step="1" inputmode="numeric" required placeholder="Ví dụ: 300">
+          </label>
+          <label for="goal-subject"><span>Môn học <small>(không bắt buộc)</small></span>
+            <input id="goal-subject" name="subject" type="text" maxlength="60" list="goal-subject-options" autocomplete="off" placeholder="Tất cả môn">
+            <datalist id="goal-subject-options"></datalist>
+          </label>
+          <button class="button-primary" id="goal-submit" type="submit">Thêm mục tiêu</button>
+        </form>
+        <p id="goal-feedback" class="goal-feedback" aria-live="polite"></p>
+        <ul class="goal-list" id="goal-list" aria-label="Danh sách mục tiêu"></ul>
+      </section>
+    </div>
   </main>
+  <footer class="site-footer"><strong>StudyFlow</strong><span>Học tập có kế hoạch, tiến bộ mỗi ngày.</span></footer>
 </body>
 </html>

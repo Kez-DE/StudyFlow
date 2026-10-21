@@ -1,1 +1,46 @@
 /* Giao diện Bài tập – thành viên 2 */
+.tasks-page { padding-top: .4rem; }
+.task-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1rem; }
+.task-stats article, .task-panel { border: 1px solid rgb(198 224 244 / 90%); border-radius: var(--radius); background: var(--surface); box-shadow: 0 14px 40px rgb(34 94 143 / 7%); backdrop-filter: blur(12px); }
+.task-stats article { display: grid; gap: .35rem; padding: 1rem 1.2rem; }
+.task-stats article span, .result-count { color: var(--muted); font-size: .86rem; }
+.task-stats article strong { color: #236bb5; font-size: 1.8rem; }
+.tasks-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(270px, .75fr); align-items: start; gap: 1rem; }
+.task-panel { min-width: 0; padding: clamp(1rem, 2vw, 1.4rem); }
+.panel-title-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.panel-title-row h2, .task-form-panel h2 { margin: .25rem 0 1rem; font-size: 1.25rem; }
+.task-filters { display: grid; grid-template-columns: minmax(150px, 1.5fr) repeat(3, minmax(125px, 1fr)); gap: .5rem; }
+.task-filters input, .task-filters select, #task-form input, #task-form select, #event-form input { width: 100%; min-height: 43px; border: 1px solid #d4e6f4; border-radius: .8rem; padding: .65rem .75rem; color: var(--ink); background: #fff; }
+.task-list { display: grid; gap: .65rem; margin: .9rem 0 0; padding: 0; list-style: none; }
+.task-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: .8rem; border: 1px solid #dfedf8; border-radius: 1rem; padding: .85rem; background: rgb(255 255 255 / 78%); }
+.task-item.is-overdue { border-color: #f0c7bd; background: #fff9f7; }
+.task-item.is-complete .task-item-content h3 { color: #71869b; text-decoration: line-through; }
+.task-complete { display: grid; width: 1.6rem; height: 1.6rem; place-items: center; border: 2px solid #9abbd6; border-radius: .55rem; color: white; background: #fff; cursor: pointer; }
+.task-complete[aria-pressed="true"] { border-color: #3988d5; background: #3988d5; }
+.task-item-content { min-width: 0; }
+.task-item-content h3 { overflow-wrap: anywhere; margin: 0; font-size: .96rem; }
+.task-item-content p { margin: .25rem 0 0; color: var(--muted); font-size: .8rem; }
+.priority-badge { border-radius: 999px; padding: .35rem .55rem; color: #315d83; background: #e8f4fd; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+.priority-high { color: #a6473d; background: #fff0ed; }
+.priority-low { color: #397352; background: #e9f7ee; }
+.is-overdue .task-item-content p { color: #a6473d; }
+.task-actions { display: flex; gap: .3rem; }
+.icon-action { border: 0; border-radius: .55rem; padding: .4rem .5rem; color: #286fc9; background: #edf7ff; font-size: .78rem; cursor: pointer; }
+.danger-action { color: #a6473d; background: #fff0ed; }
+#task-form, #event-form { display: grid; gap: .85rem; }
+#task-form label, #event-form label { display: grid; gap: .4rem; color: #405d7a; font-size: .84rem; font-weight: 650; }
+.form-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.form-feedback { min-height: 1.2em; margin: .6rem 0; color: #a6473d; font-size: .85rem; }
+.empty-state { margin: 1rem 0 0; border: 1px dashed #c8deef; border-radius: 1rem; padding: 1.25rem; color: var(--muted); text-align: center; }
+@media (max-width: 920px) { .tasks-layout { grid-template-columns: 1fr; } .task-form-panel { order: -1; } }
+@media (max-width: 700px) { .task-filters { grid-template-columns: 1fr 1fr; } .filter-search { grid-column: 1 / -1; } }
+@media (max-width: 480px) { .task-stats { gap: .5rem; } .task-stats article { padding: .75rem; } .task-stats article span { font-size: .74rem; } .task-item { grid-template-columns: auto minmax(0, 1fr) auto; gap: .55rem; } .priority-badge { grid-column: 2; justify-self: start; } .task-actions { grid-column: 3; grid-row: 1 / span 2; flex-direction: column; } }
+@media (min-width: 1000px) and (max-height: 760px) {
+  .module-heading { margin-bottom: .65rem; }
+  .task-stats { gap: .6rem; margin-bottom: .65rem; }
+  .task-stats article { padding: .55rem .8rem; }
+  .task-panel { padding: .8rem; }
+  #task-form { gap: .5rem; }
+  #task-form label { gap: .2rem; }
+  #task-form input, #task-form select, .task-filters input, .task-filters select { min-height: 37px; padding-block: .45rem; }
+}
