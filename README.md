@@ -1,10 +1,12 @@
-# StudyFlow
+# Nhóm 4
 
 StudyFlow là website quản lý học tập tĩnh, dùng HTML, CSS và JavaScript thuần. Dự án gồm Dashboard, Tasks, Calendar, Pomodoro và Analytics; dữ liệu lưu trong `localStorage` của trình duyệt hiện tại.
 
-## Chạy thử
+## Chạy thử và preview
 
-Chạy máy chủ tĩnh trong thư mục dự án rồi mở `http://localhost:4173`:
+Preview website tại đây: https://kez-de.github.io/StudyFlow/
+
+Nếu muốn chạy local, vào thư mục dự án rồi mở `http://localhost:4173`:
 
 ```sh
 python3 -m http.server 4173
