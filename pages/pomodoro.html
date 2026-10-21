@@ -3,9 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tập trung | StudyFlow</title>
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/pomodoro.css">
+  <meta name="description" content="Tập trung học với đồng hồ Pomodoro, phiên nghỉ linh hoạt và thống kê thời gian học trong StudyFlow.">
+  <meta name="theme-color" content="#dff1ff">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="StudyFlow">
+  <meta property="og:title" content="Đồng hồ Pomodoro | StudyFlow">
+  <meta property="og:description" content="Tập trung theo phiên, nghỉ đúng lúc và lưu thời gian học vào StudyFlow.">
+  <title>Đồng hồ Pomodoro | StudyFlow</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/global.css?v=3">
+  <link rel="stylesheet" href="../css/pomodoro.css?v=3">
   <script src="../js/storage.js" defer></script>
   <script src="../js/common.js" defer></script>
   <script src="../js/pomodoro.js" defer></script>
@@ -22,12 +29,78 @@
     </nav>
   </header>
   <main>
-    <h1>Tập trung</h1>
-    <p>Học theo phiên Pomodoro.</p>
-    <section class="placeholder" aria-label="Nội dung Pomodoro">
-      <h2>Chờ thành viên 4 triển khai</h2>
-      <p>Đồng hồ và lịch sử phiên học tại đây.</p>
+    <section class="pomodoro-page" data-mode="focus" aria-labelledby="pomodoro-title">
+      <div class="page-heading">
+        <p class="eyebrow">TẬP TRUNG CÓ CHỦ ĐÍCH</p>
+        <h1 id="pomodoro-title">Một việc tại một thời điểm.</h1>
+        <p>Chia việc học thành những phiên ngắn, có nghỉ giữa giờ.</p>
+        <img class="studyflow-sketch" src="../images/whale-pencil.png" alt="" width="900" height="698" decoding="async">
+      </div>
+
+      <div class="pomodoro-layout">
+        <section class="timer-card" aria-label="Đồng hồ Pomodoro">
+          <div class="timer-modes" role="group" aria-label="Chế độ đồng hồ">
+            <button class="mode-button is-active" type="button" data-mode="focus" aria-pressed="true">Tập trung</button>
+            <button class="mode-button" type="button" data-mode="break" aria-pressed="false">Nghỉ ngắn</button>
+          </div>
+          <div class="timer-ring" id="timer-ring">
+            <div class="timer-readout">
+              <span class="timer-time" id="timer-time" role="timer" aria-live="off">25:00</span>
+              <span class="timer-caption" id="timer-caption">SẴN SÀNG TẬP TRUNG</span>
+            </div>
+          </div>
+          <p class="timer-status" id="timer-status" aria-live="polite">Chọn môn học rồi bắt đầu phiên của bạn.</p>
+          <div class="timer-controls">
+            <button class="button button-primary" id="start-button" type="button">Bắt đầu</button>
+            <button class="button button-secondary" id="reset-button" type="button">Đặt lại</button>
+          </div>
+          <div class="timer-context">
+            <label class="subject-field" for="subject-select">
+              <span>Môn học</span>
+              <select id="subject-select"><option value="Tự học">Tự học</option></select>
+            </label>
+            <label class="subject-field" for="task-select">
+              <span>Việc cần hoàn thành</span>
+              <select id="task-select"><option value="">Chọn bài tập (không bắt buộc)</option></select>
+            </label>
+          </div>
+        </section>
+
+        <aside class="session-side">
+          <section class="info-card">
+            <p class="eyebrow">NHỊP HỌC</p>
+            <h2><span id="focus-duration-copy">25</span> phút học · <span id="break-duration-copy">5</span> phút nghỉ</h2>
+            <p>Phiên học chỉ được ghi nhận khi đồng hồ tập trung chạy hết.</p>
+            <div class="today-total"><strong id="today-minutes">0</strong><span>phút tập trung hôm nay</span></div>
+          </section>
+          <section class="settings-card" aria-labelledby="settings-title">
+            <p class="eyebrow">CÁ NHÂN HÓA</p>
+            <h2 id="settings-title">Cài đặt</h2>
+            <label class="setting-row" for="dark-mode-toggle"><span>Giao diện tối</span><input id="dark-mode-toggle" type="checkbox"></label>
+            <label class="setting-row" for="sound-toggle"><span>Âm báo khi hết giờ</span><input id="sound-toggle" type="checkbox" checked></label>
+            <div class="duration-settings" aria-label="Tùy chỉnh thời lượng">
+              <div class="duration-setting">
+                <span>Tập trung</span>
+                <div class="duration-control" role="group" aria-label="Thời lượng tập trung">
+                  <button type="button" data-duration="focus" data-step="-5" aria-label="Giảm 5 phút tập trung">−</button>
+                  <strong id="focus-duration">25 phút</strong>
+                  <button type="button" data-duration="focus" data-step="5" aria-label="Tăng 5 phút tập trung">+</button>
+                </div>
+              </div>
+              <div class="duration-setting">
+                <span>Nghỉ ngắn</span>
+                <div class="duration-control" role="group" aria-label="Thời lượng nghỉ ngắn">
+                  <button type="button" data-duration="break" data-step="-1" aria-label="Giảm 1 phút nghỉ">−</button>
+                  <strong id="break-duration">5 phút</strong>
+                  <button type="button" data-duration="break" data-step="1" aria-label="Tăng 1 phút nghỉ">+</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
     </section>
   </main>
+  <footer class="site-footer"><strong>StudyFlow</strong><span>Học tập có kế hoạch, tiến bộ mỗi ngày.</span></footer>
 </body>
 </html>
